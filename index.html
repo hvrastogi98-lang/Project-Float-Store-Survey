@@ -181,7 +181,7 @@ const PAGE = {
   6:{part:'B',name:'Selling and staff', est:'Ask the retailer'},
   7:{part:'B',name:'Operations and customers', est:'Ask the retailer'},
   8:{part:'B',name:'Market, Flo and team', est:'Ask the retailer'},
-  photos:{name:'Photos and submit', est:'Store outside, inside and the mattress display'}
+  photos:{name:'Photos and submit', est:'Photos are optional but useful: store outside, inside and the mattress display'}
 };
 
 /* ============ STORE ECONOMICS: inputs and calculations ============
@@ -499,9 +499,9 @@ function renderPhotos(){
     return `<div class="photo-box${done&&req?' done':''}"><div class="q-text">${title} ${req?'<span class="req">* required</span>':'<span class="muted">(optional)</span>'}</div>
       <div class="q-hint">${hint}</div><input type="file" accept="image/*" data-gphoto="${key}"${multi?' multiple':''}>${thumbsHtml(list,key)}</div>`; };
   h += plainCard('Store photos', `
-    ${box('out','Store from outside','The whole shop front with the signboard.',false,true)}
-    ${box('in','Store from inside','A wide shot of the floor showing the layout.',true,true)}
-    ${box('disp','Mattress display','The display beds and brand sections. Add more than one if needed.',true,true)}
+    ${box('out','Store from outside','The whole shop front with the signboard.',false,false)}
+    ${box('in','Store from inside','A wide shot of the floor showing the layout.',true,false)}
+    ${box('disp','Mattress display','The display beds and brand sections. Add more than one if needed.',true,false)}
     ${box('other','Other photos','Price tags, offer boards, brochures or anything else useful.',true,false)}
     <div class="muted" style="margin-top:6px">Photos are not kept in the saved draft. If the page reloads, take them again.</div>`);
   return h;
@@ -552,9 +552,6 @@ function validate(page){
   if(page===1 && !stocked().length) return 'Please tick at least one brand in A1.';
   if(page==='photos'){
     const e=validate('start'); if(e) return e+' (Start page)';
-    if(!gphotos.out.length) return 'Please take a photo of the store from outside.';
-    if(!gphotos.in.length) return 'Please take a photo of the store from inside.';
-    if(!gphotos.disp.length) return 'Please take a photo of the mattress display.';
   }
   return '';
 }
