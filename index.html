@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Project Float — Store Visit Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Karla:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1F5FBF; --blue-dk:#174A96; --blue-lt:#EEF4FC; --blue-bd:#B9CFEF;
+  --dark:#0F0F0F; --ink:#1C1C1C; --mid:#6B6B6B; --light:#F0EFED; --white:#FFFFFF;
+  --border:#DDDBD8; --success:#2A7A4B; --error:#C0392B; --warn:#D9822B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--light);color:var(--ink);font-family:'Karla',system-ui,sans-serif;font-size:15px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+.hdr{position:sticky;top:0;z-index:20}
+.topbar{background:var(--dark);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;gap:12px}
+.logo{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:.06em;font-size:15px;white-space:nowrap}
+.logo em{font-style:normal;color:#7FB0F5}
+.sec-label{font-size:12px;color:#BDBDBD;text-align:right}
+.progress{height:4px;background:#2A2A2A}
+.progress>div{height:100%;background:var(--blue);transition:width .3s}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 110px}
+.banner{background:#FFF7E6;border:1px solid #F3D9A4;border-radius:6px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.banner button{background:none;border:none;color:var(--blue);font-weight:600;cursor:pointer;white-space:nowrap}
+.sec-head{margin:6px 0 14px}
+.sec-kicker{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--blue)}
+.sec-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin:2px 0}
+.sec-est{font-size:13px;color:var(--mid)}
+.card{background:var(--white);border:1px solid var(--border);border-radius:6px;margin-bottom:14px;overflow:hidden}
+.card-head{background:#F7F6F4;padding:9px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.q-num{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--blue)}
+.badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;color:#fff;letter-spacing:.04em}
+.b-high{background:var(--error)}.b-med{background:var(--warn)}.b-low{background:#9A9A9A}.b-opt{background:#7A7A7A}
+.method{margin-left:auto;font-size:10px;color:var(--mid);text-transform:uppercase;letter-spacing:.05em;text-align:right}
+.card-body{padding:14px}
+.q-text{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px}
+.q-hint{font-style:italic;font-size:12.5px;color:var(--mid);margin-bottom:10px}
+.q-hint b{font-style:normal;color:#444}
+.note{background:var(--blue-lt);border-left:3px solid var(--blue);padding:8px 12px;font-size:12.5px;margin:8px 0;border-radius:0 4px 4px 0}
+.warnbox{background:#FDF1E7;border-left:3px solid var(--warn);padding:8px 12px;font-size:12.5px;margin:8px 0;border-radius:0 4px 4px 0}
+.okbox{background:#EAF5EE;border-left:3px solid var(--success);padding:8px 12px;font-size:12.5px;margin:8px 0;border-radius:0 4px 4px 0}
+label.f{display:block;font-size:12.5px;font-weight:600;color:#444;margin:8px 0 4px}
+input[type=text],input[type=number],input[type=month],select,textarea{width:100%;padding:10px;border:1px solid #CFCCC8;border-radius:6px;background:#fff;font-size:15px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(31,95,191,.15)}
+textarea{min-height:60px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row2{display:grid;grid-template-columns:minmax(84px,auto) 1fr;gap:10px;align-items:center}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.inr{font-size:12px;color:var(--blue);margin-top:3px;min-height:14px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 6px}
+.chip{border:1px solid #CFCCC8;background:#fff;border-radius:18px;padding:7px 13px;font-size:13.5px;cursor:pointer;line-height:1.2}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.hl{border-color:var(--blue-bd);font-weight:600}
+.chip.hl:not(.on){background:var(--blue-lt)}
+.chip.lock{opacity:.9;cursor:default}
+.chips.sm .chip{padding:5px 10px;font-size:12.5px}
+.sub{font-size:12.5px;font-weight:700;color:#444;margin:10px 0 2px;text-transform:uppercase;letter-spacing:.04em}
+.sub.plain{text-transform:none;letter-spacing:0}
+.brand-block{border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:8px 0;background:#fff}
+.brand-block.hl{background:var(--blue-lt);border-color:var(--blue-bd)}
+.brand-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.brand-block.hl .brand-name{color:var(--blue-dk)}
+.rate{display:flex;gap:4px;flex-wrap:nowrap;margin:3px 0 8px}
+.rate button{flex:1;min-width:0;padding:8px 0;border:1px solid #CFCCC8;background:#fff;border-radius:5px;font-size:13px;cursor:pointer}
+.rate button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.rate-lbl{font-size:12.5px;color:#444;margin-top:4px}
+.foot{display:flex;gap:8px;align-items:center;padding:10px 14px;border-top:1px dashed var(--border);background:#FCFCFB;flex-wrap:wrap}
+.foot .chip{font-size:12px;padding:5px 10px}
+.foot textarea{margin-top:6px;min-height:48px;font-size:14px}
+.rm-wrap{flex-basis:100%}
+.dk-on .card-body{opacity:.45}
+.tracker{font-size:12.5px;margin-top:6px;font-weight:600}
+.tracker.ok{color:var(--success)}.tracker.bad{color:var(--error)}.tracker.pend{color:var(--warn)}
+.addrow{display:flex;gap:8px;margin-top:6px}
+.addrow input{flex:1}
+.btn{border:none;border-radius:6px;padding:12px 18px;font-weight:700;font-family:'Syne',sans-serif;font-size:14px;cursor:pointer}
+.btn-p{background:var(--blue);color:#fff}.btn-s{background:#fff;border:1px solid #CFCCC8;color:var(--ink)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 16px;z-index:20}
+.nav-in{max-width:640px;margin:0 auto;display:flex;gap:10px}
+.nav-in .btn{flex:1}
+.msg{max-width:640px;margin:0 auto 6px;font-size:13px;text-align:center}
+.msg.err{color:var(--error)}.msg.load{color:var(--blue)}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumb{position:relative;width:78px;height:78px;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb button{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px}
+.overlay{position:fixed;inset:0;background:rgba(15,15,15,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.overlay.show{display:flex}
+.ov-box{background:#fff;border-radius:10px;max-width:420px;width:100%;padding:26px 20px;text-align:center}
+.ov-box h2{font-family:'Syne',sans-serif;font-size:20px;margin:8px 0}
+.ov-box p{font-size:14px;color:var(--mid);margin-bottom:16px}
+.ov-box .btn{width:100%;margin-top:8px;display:block;text-decoration:none}
+.muted{color:var(--mid);font-size:12.5px}
+.fz{border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:10px 0;background:#FCFCFB}
+.fz.hl{background:var(--blue-lt);border-color:var(--blue-bd)}
+.fz-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.fz-head b{font-family:'Syne',sans-serif;font-size:14px}
+.linkbtn{background:none;border:none;color:var(--error);font-size:12.5px;cursor:pointer}
+.addbtn{width:100%;margin-top:6px;padding:10px;border:1px dashed #BDBAB5;border-radius:6px;background:#fff;color:var(--mid);cursor:pointer;font-size:13.5px}
+.addbtn:hover{border-color:var(--blue);color:var(--blue)}
+.fz-sum{background:var(--blue-lt);border-radius:6px;padding:8px 12px;font-size:12.5px;margin-top:10px;line-height:1.6}
+.req{color:var(--error);font-weight:700}
+.photo-box{border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:10px 0;background:#fff}
+.photo-box.done{border-color:#9FCDB0;background:#F4FAF6}
+.gps-ok{color:var(--success);font-size:13px;margin-top:6px}
+.gps-bad{color:var(--warn);font-size:13px;margin-top:6px}
+.hidden{display:none!important}
+@media (max-width:380px){.grid3{grid-template-columns:1fr 1fr}.rate button{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="hdr"><div class="topbar"><div class="logo">PROJECT <em>FLOAT</em></div><div class="sec-label" id="secLabel"></div></div>
+<div class="progress"><div id="prog" style="width:0%"></div></div></div>
+<div class="wrap">
+  <div id="draftBanner" class="banner hidden"><span>Draft restored from earlier on this phone. Photos need to be taken again.</span><button type="button" id="freshBtn">Start fresh</button></div>
+  <div id="page"></div>
+</div>
+<div class="nav"><div class="msg" id="msg"></div><div class="nav-in"><button class="btn btn-s" id="backBtn" type="button">← Back</button><button class="btn btn-p" id="nextBtn" type="button">Next →</button></div></div>
+<div class="overlay" id="okOverlay"><div class="ov-box">
+  <div style="font-size:42px">✅</div><h2>Submitted successfully</h2>
+  <p>The response has been saved. You can start the next store.</p>
+  <button class="btn btn-p" type="button" id="againBtn">Start the next store</button>
+</div></div>
+
+<script>
+/* ============ CONFIG ============ */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGcoaq6bmEBjYsPVl28Wt5vS4kVGsMQHIn51xJwqBsyMhK1L1ODcZGTN4MopMXrmqn/exec';   // Google Apps Script web app URL (ends in /exec)
+const DRAFT_KEY = 'float_store_draft_v1';
+const VERSION = 'v1';
+
+/* ============ LISTS ============ */
+const TARGET = 'Flo';
+const MAIN_BRANDS = ['Sleepwell','Duroflex','Kurlon','Wakefit','The Sleep Company','Emma','Sleepycat','Sleepyhead','Flo'];
+const OTHER_BRANDS = ['Perfect Rest','Repose','Peps','Kingkoir','Mattress Club','Restolex','Springfit','Springtek','Amore','Nilkamal'];
+// Benchmark queen 72x60x6 foam SKU per brand (guide Q24)
+const BENCH = {'Springfit':'ZBox Orthopaedic Mattress','The Sleep Company':'Smart Ortho Mattress','Peps':'Vista Foam','Sleepycat':'Original Mattress',
+  'Emma':'Emma Black Mattress','Amore':'Amore Essential Mattress','Duroflex':'LiveIn 2 in 1 Dual Sided Roll Pack Mattress','Sleepwell':'Dual Mattress',
+  'Wakefit':'Wakefit Dual Comfort Mattress','Kurlon':'Dual Roll Pack','Sleepyhead':'Flip - Dual Sided Foam Mattress (Firm & Soft)',
+  'Springtek':'Dual Comfort Reversible Mattress','Flo':'Ortho Mattress','Nilkamal':'Lite Dual Comfort Mattress'};
+const OTHER_MODEL = 'Other 6" queen foam model';
+const NONE_MODEL = 'No 6" queen foam on display';
+const STORE_TYPES = ['EBO (single brand)','MBO (multi-brand)'];
+const AGE = ['Under 25','25–35','35–50','50+'];
+const GENDER = ['Mostly male','Mostly female','Mixed','Couples / families'];
+const KNOW = ['Experimenters','Discount scouts','Brand loyal','Researched online first','Low product knowledge'];
+const OMNI = ['Click and buy online','Home delivery','Online catalogue / WhatsApp orders','Home trial','EMI / online payment','Brand app or QR code','None'];
+const EXPLAIN = ['Under 1 min','1–3 min','3–5 min','Over 5 min'];
+const TAT = ['Same day','1 day','2–3 days','4–6 days','1 week','2 weeks or more'];
+const ACCESS = ['Pillows','Mattress protectors','Bed sheets / covers','Comforters','Other'];
+const THICK = ['4 inch','5 inch','6 inch','8 inch','10 inch or more'];
+const INCENT_WHO = ['Store level','Store manager','Salesperson','Paid by brand','None'];
+const CATEGORY = ['Foam','Bonnell spring','Pocket spring','Coir','Latex','Memory foam','Hybrid','Cotton'];
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const INV = ['Store holds stock','Display only, brand ships','Mix of both'];
+const OWN = ['Company owned','Franchise','Owner-run (independent)'];
+const DELIV = ['Free','Paid','Free above a bill value'];
+const ONLINE = ['Yes, often','Sometimes','Rarely','No'];
+const CONV = ['Cotton loses shape / thickness','Cotton hard to maintain','Better comfort / back support','Warranty','Hygiene','EMI / financing','Retailer earns more margin','Brand advertising','Other'];
+const FLO_ANS = ['Yes','Maybe, on conditions','No'];
+const FLO_WHY = ['Better margin','Schemes / incentives','Longer credit period','Customer demand','Marketing support','Display / fixture support','No space','Low brand awareness','Quality concerns','Enough brands already','Other'];
+const BANDS = ['Under ₹10K','₹10–20K','₹20–40K','₹40–60K','₹60K+'];
+const ROLES = ['Store manager','Salesperson','Cashier / billing','Fitters / carpenters','Delivery','Warehousing','Others'];
+const DK = "Don't know / Refused";
+
+const QMETA = {};
+['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13'].forEach(k=>QMETA[k]='Observe');
+for(let i=1;i<=27;i++) QMETA['B'+i]='Ask';
+QMETA.A7='Observe · price tags'; QMETA.A11='Observe + Ask';
+const PAGE = {
+  start:{name:'Store details', est:'Fill before you start · 2 min'},
+  1:{part:'A',name:'Brands and display', est:'Observe · walk the floor first'},
+  2:{part:'A',name:'Pricing and offers', est:'Observe · read price tags; ask only if not shown'},
+  3:{part:'A',name:'Store experience', est:'Observe · as a customer would'},
+  4:{part:'B',name:'Footfall and sales', est:'Ask the retailer'},
+  5:{part:'B',name:'Store economics', est:'Ask the retailer · monthly figures, rough numbers are fine'},
+  6:{part:'B',name:'Selling and staff', est:'Ask the retailer'},
+  7:{part:'B',name:'Operations and customers', est:'Ask the retailer'},
+  8:{part:'B',name:'Market, Flo and team', est:'Ask the retailer'},
+  photos:{name:'Photos and submit', est:'Store outside, inside and the mattress display'}
+};
+
+/* ============ STORE ECONOMICS: inputs and calculations ============
+   Each calc is written to the Sheet as a live formula ({Header} = that column in the same row)
+   and shown on the form as a check. Blank inputs count as 0 inside a formula,
+   but a calc stays blank until every column in `req` has a number (`any` = at least one). */
+const ECON = [
+  {g:'Revenue (per month)'},
+  {k:'asp', h:'B5 Mattress ASP (₹)', l:'Mattress average selling price ₹'},
+  {k:'rev_m', h:'B5 Revenue - mattress (₹/month)', l:'Revenue from mattresses ₹'},
+  {k:'rev_c', h:'B5 Revenue - cushions / pillows (₹/month)', l:'Cushions / pillows ₹'},
+  {k:'rev_b', h:'B5 Revenue - bedding / bed covers (₹/month)', l:'Bedding / bed covers ₹'},
+  {k:'rev_f', h:'B5 Revenue - furniture (₹/month)', l:'Furniture ₹'},
+  {g:'Cost of goods'},
+  {k:'cogs_u', h:'B5 Mattress COGS per unit (₹)', l:'Mattress purchase cost per unit ₹'},
+  {k:'cogs_o', h:'B5 Other products COGS (₹/month)', l:'Other products purchase cost ₹ / month'},
+  {g:'Trade and performance incentives (per month)'},
+  {k:'inc_t', h:'B5 Monthly target incentives (₹/month)', l:'Monthly target incentives ₹'},
+  {k:'inc_s', h:'B5 Scheme discount (₹/month)', l:'Scheme discount ₹'},
+  {g:'Operating costs, other than COGS (per month)'},
+  {k:'rent', h:'B5 Rent (₹/month)', l:'Rent ₹'},
+  {k:'emp', h:'B5 Employee cost (₹/month)', l:'Employee cost ₹'},
+  {k:'ga', h:'B5 G&A incl. utilities (₹/month)', l:'G&A (utilities etc.) ₹'},
+  {k:'log', h:'B5 Logistics (₹/month)', l:'Logistics ₹'},
+  {g:'Capital'},
+  {k:'inv', h:'B5 Inventory held (₹)', l:'Inventory held ₹'},
+  {k:'fit', h:'B5 Furniture and fittings (₹)', l:'Furniture and fittings (one-time) ₹'},
+  {k:'wcd', h:'B5 Working capital days', l:'Working capital days (excl. inventory)', days:true}
+];
+const H = k=>'{'+ECON.find(e=>e.k===k).h+'}';
+const C = n=>'{B5 Calc - '+n+'}';
+const CALC = [
+  {h:'B5 Calc - Revenue from other products (₹/month)', f:`${H('rev_c')}+${H('rev_b')}+${H('rev_f')}`, req:[H('rev_c'),H('rev_b'),H('rev_f')], any:true},
+  {h:'B5 Calc - Total revenue (₹/month)', f:`${H('rev_m')}+${C('Revenue from other products (₹/month)')}`, req:[H('rev_m')]},
+  {h:'B5 Calc - Mattresses sold (units/month)', f:`${H('rev_m')}/${H('asp')}`, req:[H('rev_m'),H('asp')], dp:1},
+  {h:'B5 Calc - Total mattress COGS (₹/month)', f:`${H('cogs_u')}*${C('Mattresses sold (units/month)')}`, req:[H('cogs_u'),C('Mattresses sold (units/month)')]},
+  {h:'B5 Calc - Total COGS (₹/month)', f:`${C('Total mattress COGS (₹/month)')}+${H('cogs_o')}`, req:[C('Total mattress COGS (₹/month)')]},
+  {h:'B5 Calc - Total trade incentives (₹/month)', f:`${H('inc_t')}+${H('inc_s')}`, req:[H('inc_t'),H('inc_s')], any:true},
+  {h:'B5 Calc - Gross profit incl. incentives (₹/month)', f:`${C('Total revenue (₹/month)')}-${C('Total COGS (₹/month)')}+${C('Total trade incentives (₹/month)')}`, req:[C('Total revenue (₹/month)'),C('Total COGS (₹/month)')]},
+  {h:'B5 Calc - Gross margin (%)', f:`${C('Gross profit incl. incentives (₹/month)')}/${C('Total revenue (₹/month)')}`, req:[C('Gross profit incl. incentives (₹/month)')], pct:true},
+  {h:'B5 Calc - Total opex (₹/month)', f:`${H('rent')}+${H('emp')}+${H('ga')}+${H('log')}`, req:[H('rent'),H('emp'),H('ga'),H('log')], any:true},
+  {h:'B5 Calc - EBITDA without incentives (₹/month)', f:`${C('Total revenue (₹/month)')}-${C('Total COGS (₹/month)')}-${C('Total opex (₹/month)')}`, req:[C('Total revenue (₹/month)'),C('Total COGS (₹/month)'),C('Total opex (₹/month)')]},
+  {h:'B5 Calc - EBITDA margin without incentives (%)', f:`${C('EBITDA without incentives (₹/month)')}/${C('Total revenue (₹/month)')}`, req:[C('EBITDA without incentives (₹/month)')], pct:true},
+  {h:'B5 Calc - EBITDA with incentives (₹/month)', f:`${C('EBITDA without incentives (₹/month)')}+${C('Total trade incentives (₹/month)')}`, req:[C('EBITDA without incentives (₹/month)')]},
+  {h:'B5 Calc - EBITDA margin with incentives (%)', f:`${C('EBITDA with incentives (₹/month)')}/${C('Total revenue (₹/month)')}`, req:[C('EBITDA with incentives (₹/month)')], pct:true},
+  {h:'B5 Calc - Working capital (₹)', f:`${C('Total revenue (₹/month)')}*${H('wcd')}/30`, req:[C('Total revenue (₹/month)'),H('wcd')]},
+  {h:'B5 Calc - Total capital employed (₹)', f:`${H('inv')}+${H('fit')}+${C('Working capital (₹)')}`, req:[H('inv'),H('fit'),C('Working capital (₹)')], any:true},
+  {h:'B5 Calc - EBITDA without incentives (₹/year)', f:`${C('EBITDA without incentives (₹/month)')}*12`, req:[C('EBITDA without incentives (₹/month)')]},
+  {h:'B5 Calc - EBITDA with incentives (₹/year)', f:`${C('EBITDA with incentives (₹/month)')}*12`, req:[C('EBITDA with incentives (₹/month)')]},
+  {h:'B5 Calc - ROI without incentives (%)', f:`${C('EBITDA without incentives (₹/year)')}/${C('Total capital employed (₹)')}`, req:[C('EBITDA without incentives (₹/year)'),C('Total capital employed (₹)')], pct:true},
+  {h:'B5 Calc - ROI with incentives (%)', f:`${C('EBITDA with incentives (₹/year)')}/${C('Total capital employed (₹)')}`, req:[C('EBITDA with incentives (₹/year)'),C('Total capital employed (₹)')], pct:true}
+];
+
+/* ============ STATE ============ */
+const pad=n=>String(n).padStart(2,'0');
+function today(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function newId(){ const d=new Date(); return 'FLT-'+String(d.getFullYear()).slice(2)+pad(d.getMonth()+1)+pad(d.getDate())+'-'+Math.random().toString(36).slice(2,6).toUpperCase(); }
+function blankState(){
+  return {id:newId(), version:VERSION, started:new Date().toISOString(),
+    meta:{visitor:'',date:today(),city:'',area:'',store:'',age:'',contact:'',phone:'',test:false}, gps:{},
+    storeType:'', eboBrand:'', eboOther:'', customBrands:[], cotton:[{},{},{},{}], q:{}, dk:{}, rm:{}, rmOpen:{}};
+}
+let state = blankState();
+let gphotos = {out:[], in:[], disp:[], other:[]};   // not saved in draft
+let cur = 'start';
+let gpsBusy = false;
+
+/* ============ HELPERS ============ */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function get(path){return path.split('.').reduce((o,k)=>o==null?undefined:o[k],state)}
+function set(path,val){const ks=path.split('.');let o=state;ks.slice(0,-1).forEach(k=>{if(o[k]==null||typeof o[k]!=='object')o[k]={};o=o[k]});o[ks[ks.length-1]]=val}
+const num = v=>{const n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isNaN(n)?null:n};
+const inr = v=>{const n=num(v);return n==null?'':'₹'+Math.round(n).toLocaleString('en-IN')};
+const arr = path=>{const v=get(path);return Array.isArray(v)?v:[]};
+const isEBO = ()=>state.storeType===STORE_TYPES[0];
+const allBrands = ()=>MAIN_BRANDS.concat(OTHER_BRANDS,state.customBrands);
+const eboBrand = ()=>isEBO()?(state.eboBrand==='Other'?(state.eboOther||'').trim():state.eboBrand):'';
+function stocked(){ const e=eboBrand(), on=arr('q.a1'); return allBrands().filter(b=>b===e||on.includes(b)); }
+const single = ()=>stocked().length===1;
+const hl = b=>b===TARGET?' hl':'';
+function pages(){ return ['start',1,2,3,4,5,6,7,8,'photos']; }
+function sumOf(prefix,keys){ return keys.reduce((s,k)=>s+(num(get(prefix+k))||0),0); }
+
+/* ============ UI BUILDERS ============ */
+function chip(path,val,label,multi,extra){
+  const v=get(path); const on = multi ? (Array.isArray(v)&&v.includes(val)) : v===val;
+  return `<button type="button" class="chip${on?' on':''}${extra||''}" data-chip="${esc(path)}" data-val="${esc(val)}" data-multi="${multi?1:0}">${esc(label==null?val:label)}</button>`;
+}
+function chips(path,vals,multi,cls){ return `<div class="chips${cls?' '+cls:''}">${vals.map(v=>chip(path,v,v,multi,hl(v))).join('')}</div>`; }
+function txt(path,ph,type){ return `<input type="${type||'text'}" data-k="${esc(path)}" value="${esc(get(path))}" placeholder="${esc(ph||'')}"${type==='number'?' inputmode="decimal"':''}>`; }
+function money(path,ph){ return `<input type="number" inputmode="numeric" data-k="${esc(path)}" value="${esc(get(path))}" placeholder="${esc(ph||'₹')}"><div class="inr" data-inr-for="${esc(path)}">${inr(get(path))}</div>`; }
+function sel(path,opts,ph,rr){ const v=get(path); return `<select data-k="${esc(path)}"${rr?' data-rr="1"':''}><option value="">${esc(ph||'— Select —')}</option>${opts.map(o=>`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`; }
+function rate(path,max){ let h='<div class="rate">'; for(let i=1;i<=max;i++){h+=`<button type="button" class="${String(get(path))===String(i)?'on':''}" data-chip="${esc(path)}" data-val="${i}" data-multi="0">${i}</button>`;} return h+'</div>'; }
+function card(id,text,hint,body){
+  const dk=!!state.dk[id]; const rmOpen=!!(state.rmOpen[id]||state.rm[id]);
+  return `<div class="card${dk?' dk-on':''}" id="card-${id}">
+    <div class="card-head"><span class="q-num">${esc(id)}</span><span class="method">${esc(QMETA[id]||'')}</span></div>
+    <div class="card-body"><div class="q-text">${text}</div>${hint?`<div class="q-hint">${hint}</div>`:''}${body}</div>
+    <div class="foot">
+      <button type="button" class="chip${dk?' on':''}" data-dk="${id}">${DK}</button>
+      <button type="button" class="chip" data-rmtoggle="${id}">${rmOpen?'− Remarks':'+ Remarks'}</button>
+      ${rmOpen?`<div class="rm-wrap"><textarea data-k="rm.${id}" placeholder="Anything else the retailer said or you noticed (optional)">${esc(state.rm[id])}</textarea></div>`:''}
+    </div></div>`;
+}
+function plainCard(title,body){ return `<div class="card"><div class="card-head"><span class="q-num">${esc(title)}</span></div><div class="card-body">${body}</div></div>`; }
+function secHead(n){ const s=PAGE[n];
+  const kicker = n==='start'?'START':n==='photos'?'LAST STEP':(s.part==='A'?'PART A · OBSERVE':'PART B · ASK THE RETAILER');
+  return `<div class="sec-head"><div class="sec-kicker">${kicker}</div><div class="sec-title">${esc(s.name)}</div><div class="sec-est">${esc(s.est)}</div></div>`; }
+function brandBlocks(list,fn){ return list.map(b=>`<div class="brand-block${hl(b)}"><div class="brand-name">${esc(b)}</div>${fn(b)}</div>`).join(''); }
+function perBrand(fn){ const s=stocked(); return s.length?brandBlocks(s,fn):'<div class="note">No brands ticked yet. Tick the brands on display in A1 first.</div>'; }
+function shareInputs(prefix,trackId){
+  const s=stocked();
+  if(!s.length) return '<div class="note">No brands ticked yet. Tick the brands on display in A1 first.</div>';
+  if(s.length===1) return `<div class="okbox">Only ${esc(s[0])} is on display, so it is 100%.</div>`;
+  return s.map(b=>`<div class="brand-block${hl(b)}"><div class="row2"><div class="brand-name">${esc(b)}</div><div>${txt(prefix+b,'%','number')}</div></div></div>`).join('')+`<div class="tracker" id="${trackId}"></div>`;
+}
+function thumbsHtml(list,key){ return list.length?`<div class="thumbs">${list.map((t,j)=>`<div class="thumb"><img src="${t.url}" alt=""><button type="button" data-delphoto="${esc(key)}|${j}">✕</button></div>`).join('')}</div>`:''; }
+
+/* ============ START ============ */
+function gpsHtml(){
+  const g=state.gps||{};
+  if(gpsBusy) return '<div class="gps-bad">Getting location… keep the phone still.</div>';
+  if(g.lat!=null) return `<div class="gps-ok">✓ Location captured: ${g.lat.toFixed(5)}, ${g.lng.toFixed(5)} (± ${Math.round(g.acc)} m) · <a href="https://maps.google.com/?q=${g.lat},${g.lng}" target="_blank" rel="noopener">view on map</a></div>`;
+  if(g.err) return `<div class="gps-bad">⚠ Couldn't get location (${esc(g.err)}). Try again; if it still fails, carry on.</div>`;
+  return '<div class="muted" style="margin-top:6px">Tap at the store entrance and allow location when the phone asks.</div>';
+}
+function renderStart(){
+  let h = secHead('start');
+  h += plainCard('Overall location details', `
+    <div class="grid2"><div><label class="f">EYP visitor name <span class="req">*</span></label>${txt('meta.visitor','Your name')}</div>
+      <div><label class="f">Date of visit</label><input type="date" data-k="meta.date" value="${esc(state.meta.date)}"></div></div>
+    <div class="grid2"><div><label class="f">City <span class="req">*</span></label>${txt('meta.city','e.g. Kozhikode')}</div><div><label class="f">Location / area</label>${txt('meta.area','e.g. Mavoor Road')}</div></div>
+    <label class="f">Store name <span class="req">*</span></label>${txt('meta.store','e.g. Sleep Lounge')}
+    <label class="f">Age of the store (years)</label>${txt('meta.age','years','number')}
+    <div class="grid2"><div><label class="f">Store contact person</label>${txt('meta.contact','Name')}</div><div><label class="f">Contact number</label>${txt('meta.phone','Phone','tel')}</div></div>
+    <label class="f">GPS location</label>
+    <button type="button" class="btn btn-s" id="gpsBtn" style="width:100%">📍 ${state.gps&&state.gps.lat!=null?'Capture location again':'Capture location'}</button>
+    <div id="gpsInfo">${gpsHtml()}</div>
+    <div style="margin-top:12px"><button type="button" class="chip${state.meta.test?' on':''}" data-toggle="meta.test">Test response (tick for practice runs)</button></div>
+    <div class="muted" style="margin-top:8px">Store ID: <b>${esc(state.id)}</b></div>`);
+  h += plainCard('Store type', `
+    <div class="q-text">Is this an EBO or an MBO? <span class="req">*</span></div>
+    <div class="q-hint">EBO = exclusive brand outlet (one brand only) · MBO = multi-brand outlet</div>
+    ${chips('storeType',STORE_TYPES,false)}
+    ${isEBO()?`<label class="f">Brand of this EBO <span class="req">*</span></label>${sel('eboBrand',allBrands().concat(['Other']),'— Select brand —',true)}
+      ${state.eboBrand==='Other'?txt('eboOther','Type the brand'):''}`:''}`);
+  return h;
+}
+
+/* ============ PAGE 1 · A1–A6 ============ */
+function renderP1(){
+  let h = secHead(1);
+  const e=eboBrand();
+  h += card('A1','Which mattress brands are available in the store?', isEBO()&&e?`EBO brand <b>${esc(e)}</b> is ticked already. Tick any other brand on display.`:'Walk the floor and tick every brand on display. Add any brand not in the list.',
+    `<div class="sub">Main brands</div><div class="chips">${MAIN_BRANDS.map(b=>b===e?`<button type="button" class="chip on lock${hl(b)}">${esc(b)}</button>`:chip('q.a1',b,b,true,hl(b))).join('')}</div>
+     <div class="sub">Others</div><div class="chips">${OTHER_BRANDS.concat(state.customBrands).map(b=>b===e?`<button type="button" class="chip on lock">${esc(b)}</button>`:chip('q.a1',b,b,true)).join('')}</div>
+     <div class="addrow"><input type="text" id="newBrand" placeholder="Brand not in the list"><button type="button" class="btn btn-s" id="addBrandBtn">+ Add brand</button></div>
+     <div class="muted" style="margin-top:6px">${stocked().length} brand${stocked().length===1?'':'s'} ticked</div>`);
+  h += card('A2','Overall staff quality rating','1 = poor, 5 = excellent.',
+    `<div class="rate-lbl">Conversation quality / product knowledge</div>${rate('q.a2_conv',5)}<div class="rate-lbl">Attire / dress code</div>${rate('q.a2_attire',5)}`);
+  h += card('A3','Total number of mattress SKUs on display','Count every mattress model on the floor.', txt('q.a3','No. of SKUs','number'));
+  h += card('A4','What is the highest-priced product available?','',
+    `<div class="grid2"><div><label class="f">Price ₹</label>${money('q.a4_price')}</div><div><label class="f">Brand</label>${sel('q.a4_brand',stocked().length?stocked():allBrands())}</div></div>
+     <label class="f">Model (optional)</label>${txt('q.a4_model','Model name')}`);
+  h += card('A5','What share of the shelf / floor space does each brand get?','Your estimate of display space, adding to 100%.', shareInputs('q.a5.','a5track'));
+  h += card('A6','Characteristics of the customers visiting the store','Watch the customers in the store; ask the staff if it is empty.',
+    `<div class="sub">Age (pick all that apply)</div>${chips('q.a6_age',AGE,true,'sm')}
+     <div class="sub">Gender</div>${chips('q.a6_gender',GENDER,false,'sm')}
+     <div class="sub">Product knowledge / acceptance</div>${chips('q.a6_know',KNOW,true,'sm')}`);
+  return h;
+}
+
+/* ============ PAGE 2 · A7–A9 ============ */
+function renderP2(){
+  let h = secHead(2);
+  h += card('A7','Price of a queen-size 72×60×6 inch foam mattress, by brand','Use the listed benchmark model where it is on display; otherwise the closest 6" queen foam model. Write MRP and the customer selling price (CSP) after discount. <b>Merges the guide\'s Q7 and Q24.</b>',
+    perBrand(b=>{ const p='q.a7.'+b, m=get(p+'.model'), opts=(BENCH[b]?[BENCH[b]]:[]).concat([OTHER_MODEL,NONE_MODEL]);
+      const mrp=num(get(p+'.mrp')), csp=num(get(p+'.csp'));
+      return `${sel(p+'.model',opts,'— Model —',true)}
+        ${m===OTHER_MODEL?txt(p+'.other','Model name'):''}
+        ${m&&m!==NONE_MODEL?`<div class="grid2"><div><label class="f">MRP ₹</label>${money(p+'.mrp')}</div><div><label class="f">CSP ₹</label>${money(p+'.csp')}</div></div>
+        <div data-a7chk="${esc(b)}">${mrp&&csp&&csp>mrp?'<div class="warnbox">CSP is above MRP. Please check.</div>':''}</div>`:''}`; }));
+  h += card('A8','Customer selling price (CSP) of a queen-size 72×60×6 inch spring mattress, by brand','',
+    perBrand(b=>{ const p='q.a8.'+b; return `${chips(p+'.avail',['On display','Not on display'],false,'sm')}
+      ${get(p+'.avail')==='On display'?`<div class="grid2"><div><label class="f">CSP ₹</label>${money(p+'.csp')}</div><div><label class="f">Model (optional)</label>${txt(p+'.model','Model')}</div></div>`:''}`; }));
+  h += card('A9','Discounts / offers available at the store, for each brand and at the store level','',
+    perBrand(b=>{ const p='q.a9.'+b; return `${chips(p+'.yn',['Offer running','No offer'],false,'sm')}${get(p+'.yn')==='Offer running'?txt(p+'.detail','What is the offer? e.g. 20% off, free pillows'):''}`; })+
+    `<label class="f">Store-level discount (on the overall bill)</label>${txt('q.a9_store','e.g. 10–15%, complimentary bedsheets')}
+     <label class="f">Card / bank offers</label>${txt('q.a9_card','e.g. 10% off on HDFC cards, no-cost EMI')}`);
+  return h;
+}
+
+/* ============ PAGE 3 · A10–A13 ============ */
+function renderP3(){
+  let h = secHead(3);
+  h += card('A10','Look and feel, customer experience at the store','1 = poor, 5 = excellent.',
+    `<div class="rate-lbl">Lighting</div>${rate('q.a10_light',5)}
+     <div class="rate-lbl">Seating arrangement / availability for customers</div>${rate('q.a10_seat',5)}
+     <div class="rate-lbl">General look and feel (shelf quality, premiumness)</div>${rate('q.a10_look',5)}
+     <div class="grid3" style="margin-top:6px"><div><label class="f">Any odour?</label>${chips('q.a10_odour',['Yes','No'],false,'sm')}</div>
+     <div><label class="f">Water offered?</label>${chips('q.a10_water',['Yes','No'],false,'sm')}</div>
+     <div><label class="f">Digital screens / tablets?</label>${chips('q.a10_screens',['Yes','No'],false,'sm')}</div></div>`);
+  h += card('A11','What omnichannel features are available? (e.g. click and buy, deliver to home)','Then note how the staff sell, as a walk-in customer would see it.',
+    `${chips('q.a11_omni',OMNI,true,'sm')}
+     <label class="f">Which brand does the retailer recommend first to a walk-in customer?</label>${sel('q.a11_first',stocked().length?stocked():allBrands())}
+     <label class="f">Approx. time spent explaining each product</label>${chips('q.a11_time',EXPLAIN,false,'sm')}
+     <label class="f">Which brand are customers increasingly asking for?</label>${sel('q.a11_asked',allBrands())}`);
+  h += card('A12','Turnaround time: how long does each brand take to supply after the store orders?','',
+    perBrand(b=>chips('q.a12.'+b,TAT,false,'sm')));
+  h += card('A13','Does the store sell accessories?','',
+    `${chips('q.a13',['Yes','No'],false)}${get('q.a13')==='Yes'?`<div class="sub">Which?</div>${chips('q.a13_which',ACCESS,true,'sm')}`:''}`);
+  return h;
+}
+
+/* ============ PAGE 4 · B1–B4 ============ */
+function renderP4(){
+  let h = secHead(4);
+  h += card('B1','Area of the store (sq ft)','', txt('q.b1','sq ft','number'));
+  h += card('B2','Average footfall per day','Number of people walking in on a normal day.', txt('q.b2','people per day','number'));
+  h += card('B3','Average number of bills per day','', `${txt('q.b3','bills per day','number')}<div id="b3chk"></div>`);
+  h += card('B4','Average mattress sales per day, and other products sold per month','',
+    `<label class="f">Mattress sales per day ₹</label>${money('q.b4_day')}
+     <div class="sub">Other products sold per month (units)</div>
+     <div class="grid3"><div><label class="f">Cushions / pillows</label>${txt('q.b4_cush','units','number')}</div><div><label class="f">Bedding / bed covers</label>${txt('q.b4_bed','units','number')}</div><div><label class="f">Furniture</label>${txt('q.b4_furn','units','number')}</div></div>`);
+  return h;
+}
+
+/* ============ PAGE 5 · B5 ECONOMICS ============ */
+function econVals(){ const v={}; ECON.forEach(e=>{ if(e.k) v[e.h]=num(get('q.b5.'+e.k)); }); return v; }
+function evalCalcs(){
+  const v=econVals(), out={};
+  const val=t=>{ const k=t.slice(1,-1); return k in out ? out[k] : v[k]; };
+  CALC.forEach(c=>{
+    const have=c.req.map(t=>{ const x=val(t); return x!=null&&x!==''; });
+    const ok = c.any?have.some(Boolean):have.every(Boolean);
+    if(!ok){ out[c.h]=null; return; }
+    const expr=c.f.replace(/\{[^}]+\}/g,t=>{ const x=val(t); return '('+((x==null||x==='')?0:x)+')'; });
+    let r=null; try{ r=Function('"use strict";return ('+expr+')')(); }catch(e){ r=null; }
+    out[c.h]=(r==null||!isFinite(r))?null:r;
+  });
+  return out;
+}
+function fmtCalc(c,x){ if(x==null) return '—'; if(c.pct) return (x*100).toFixed(1)+'%'; if(c.dp) return x.toFixed(c.dp); return inr(x); }
+function renderP5(){
+  let h = secHead(5);
+  let body='<div class="q-hint">Ask for a normal month. Rough numbers are fine. Margins, EBITDA and ROI are calculated for you below and in the Sheet.</div>';
+  ECON.forEach(e=>{ if(e.g){ body+=`<div class="sub">${esc(e.g)}</div>`; return; }
+    body+= e.days?`<label class="f">${esc(e.l)}</label>${txt('q.b5.'+e.k,'days','number')}<div class="muted">Customer credit days minus supplier credit days, excluding inventory.</div>`
+                 :`<label class="f">${esc(e.l)}</label>${money('q.b5.'+e.k)}`; });
+  body+=`<div class="sub">Calculated (check these look sensible)</div><div class="fz-sum" id="econCalc"></div><div id="b5chk"></div>`;
+  h += card('B5','Store P&L: revenue, costs, incentives and capital','',body);
+  return h;
+}
+function econHtml(){ const o=evalCalcs();
+  return CALC.map(c=>`${esc(c.h.replace('B5 Calc - ',''))}: <b>${fmtCalc(c,o[c.h])}</b>`).join('<br>'); }
+
+/* ============ PAGE 6 · B6–B11 ============ */
+function renderP6(){
+  let h = secHead(6);
+  h += card('B6','Average bill value, after discount (₹)','', money('q.b6'));
+  h += card('B7','Average discount on the bill (%)','', `${txt('q.b7','%','number')}`);
+  h += card('B8','Most popular SKU by thickness, for each brand','',
+    perBrand(b=>`${chips('q.b8.'+b+'.t',THICK,false,'sm')}${txt('q.b8.'+b+'.m','Model (optional)')}`));
+  h += card('B9','Salary per month for salespeople (₹)','Typical fixed salary for one salesperson.', money('q.b9'));
+  h += card('B10','Sales incentives, if any (at store / manager / salesperson level etc.)','',
+    `${chips('q.b10_who',INCENT_WHO,true,'sm')}${txt('q.b10_detail','How it works, e.g. ₹200 per mattress, 1% of sales')}`);
+  h += card('B11','Which is your highest-selling category?','',
+    `${chips('q.b11',CATEGORY,false,'sm')}<label class="f">Brand / range</label>${txt('q.b11_brand','e.g. Sleepyhead Prime')}`);
+  return h;
+}
+
+/* ============ PAGE 7 · B12–B19 ============ */
+function renderP7(){
+  let h = secHead(7);
+  h += card('B12','What is the USP of the store / brand (EBO)?','', `<textarea data-k="q.b12" placeholder="In the retailer's words">${esc(get('q.b12'))}</textarea>`);
+  h += card('B13','Details of loyalty programmes or warranty, if any','', `<textarea data-k="q.b13" placeholder="e.g. 10-year warranty on Duroflex, points on repeat purchase">${esc(get('q.b13'))}</textarea>`);
+  h += card('B14','Peak sale timings: when do you have peak sales?','',
+    `<div class="sub">Days</div>${chips('q.b14_days',DAYS,true,'sm')}<div class="sub">Months</div>${chips('q.b14_months',MONTHS,true,'sm')}${txt('q.b14_note','Festivals / seasons, e.g. Onam, wedding season')}`);
+  h += card('B15','How is inventory managed? What % of the portfolio does the store hold in stock?','',
+    `${chips('q.b15',INV,false,'sm')}<label class="f">% of portfolio held in stock</label>${txt('q.b15_pct','%','number')}`);
+  h += card('B16','Number of days to deliver to the customer after an order is placed','', txt('q.b16','days','number'));
+  h += card('B17','What are the delivery charges?','', `${chips('q.b17',DELIV,false,'sm')}${get('q.b17')&&get('q.b17')!=='Free'?txt('q.b17_detail','Charge ₹ or the bill value above which delivery is free'):''}`);
+  h += card('B18','Is the store company owned or franchise owned?','', chips('q.b18',OWN,false,'sm'));
+  h += card('B19','Does the retailer lose customers who check prices online while in the store?','', chips('q.b19',ONLINE,false,'sm'));
+  return h;
+}
+
+/* ============ PAGE 8 · B20–B27 ============ */
+function renderP8(){
+  let h = secHead(8);
+  h += card('B20','What is driving unbranded to branded conversion?','Unbranded cotton mattresses are priced very low while entry-level branded starts at about ₹9K. What drives the switch despite the price gap?',
+    `${chips('q.b20',CONV,true,'sm')}<textarea data-k="q.b20_note" placeholder="In the retailer's words">${esc(get('q.b20_note'))}</textarea>`);
+  h += card('B21','Prices of 72×60×3 inch unbranded cotton mattresses','Take prices for 4–5 unbranded products.',
+    state.cotton.map((c,i)=>`<div class="grid2"><div><label class="f">Product / maker ${i+1}</label>${txt('cotton.'+i+'.name','Name or description')}</div><div><label class="f">Price ₹</label>${money('cotton.'+i+'.price')}</div></div>`).join('')
+    +(state.cotton.length<6?'<button type="button" class="addbtn" data-addcotton="1">+ Add another product</button>':''));
+  const fa=get('q.b22');
+  h += card('B22','Are you willing to add a value brand like Flo?','',
+    `${chips('q.b22',FLO_ANS,false)}${fa?`<div class="sub">${fa==='No'?'Why not?':fa==='Yes'?'What would you expect from the brand?':'On what conditions?'}</div>${chips('q.b22_why',FLO_WHY,true,'sm')}`:''}`);
+  h += card('B23','Entry-level SKUs: model, price and warranty, for each brand','The cheapest queen mattress each brand sells here.',
+    perBrand(b=>{ const p='q.b23.'+b; return `<label class="f">Model</label>${txt(p+'.m','Model name')}<div class="grid2"><div><label class="f">Price ₹</label>${money(p+'.p')}</div><div><label class="f">Warranty (years)</label>${txt(p+'.w','years','number')}</div></div>`; }));
+  h += card('B24','Store SKU sales volume by price band (%)','Share of mattresses sold, by count, adding to 100%.',
+    BANDS.map((b,i)=>`<div class="row2" style="margin:4px 0"><div>${esc(b)}</div><div>${txt('q.b24.p'+i,'%','number')}</div></div>`).join('')+'<div class="tracker" id="b24track"></div>');
+  h += card('B25','Number of employees, by role','',
+    `<div class="grid2">${ROLES.map((r,i)=>`<div><label class="f">${esc(r)}</label>${txt('q.b25.r'+i,'no.','number')}</div>`).join('')}</div><div class="muted" id="b25tot" style="margin-top:6px"></div>`);
+  h += card('B26','Credit period given by each brand (days)','', perBrand(b=>txt('q.b26.'+b,'days','number')));
+  h += card('B27',"Each brand's share of wallet: share of the store's mattress sales (%)",'By value, adding to 100%.', shareInputs('q.b27.','b27track'));
+  return h;
+}
+
+/* ============ PHOTOS ============ */
+function renderPhotos(){
+  let h = secHead('photos');
+  const box=(key,title,hint,multi,req)=>{ const list=gphotos[key]; const done=list.length>0;
+    return `<div class="photo-box${done&&req?' done':''}"><div class="q-text">${title} ${req?'<span class="req">* required</span>':'<span class="muted">(optional)</span>'}</div>
+      <div class="q-hint">${hint}</div><input type="file" accept="image/*" data-gphoto="${key}"${multi?' multiple':''}>${thumbsHtml(list,key)}</div>`; };
+  h += plainCard('Store photos', `
+    ${box('out','Store from outside','The whole shop front with the signboard.',false,true)}
+    ${box('in','Store from inside','A wide shot of the floor showing the layout.',true,true)}
+    ${box('disp','Mattress display','The display beds and brand sections. Add more than one if needed.',true,true)}
+    ${box('other','Other photos','Price tags, offer boards, brochures or anything else useful.',true,false)}
+    <div class="muted" style="margin-top:6px">Photos are not kept in the saved draft. If the page reloads, take them again.</div>`);
+  return h;
+}
+
+/* ============ RENDER / NAV ============ */
+const RENDER={start:renderStart,1:renderP1,2:renderP2,3:renderP3,4:renderP4,5:renderP5,6:renderP6,7:renderP7,8:renderP8,photos:renderPhotos};
+function render(){ $('#page').innerHTML=RENDER[cur](); updateLive(); updateHeader(); }
+function updateHeader(){
+  const l=pages(), i=l.indexOf(cur), s=PAGE[cur];
+  $('#secLabel').textContent = cur==='start'?'Start':cur==='photos'?'Last step':`${s.part==='A'?'A · Observe':'B · Ask'} — ${i} of ${l.length-2}`;
+  $('#prog').style.width=Math.round((i+1)/l.length*100)+'%';
+  $('#backBtn').style.visibility=i===0?'hidden':'visible';
+  $('#nextBtn').textContent= i===l.length-1?'Submit survey':'Next →';
+}
+function showPage(n){ cur=n; render(); setMsg(''); window.scrollTo(0,0); }
+function rerender(){ const y=window.scrollY; render(); window.scrollTo(0,y); }
+function setMsg(t,cls){ const m=$('#msg'); m.textContent=t; m.className='msg'+(cls?' '+cls:''); }
+function track(id,tot){ const t=$('#'+id); if(!t) return;
+  t.className='tracker '+(tot===100?'ok':tot>100?'bad':'pend');
+  t.textContent= tot===100?'✓ Total 100%': tot>100?`⚠ Total ${tot}% — over by ${tot-100}%`:`Total ${tot}% · ${100-tot}% remaining`; }
+function updateLive(){
+  document.querySelectorAll('[data-inr-for]').forEach(d=>d.textContent=inr(get(d.dataset.inrFor)));
+  const s=stocked();
+  track('a5track', s.reduce((t,b)=>t+(num(get('q.a5.'+b))||0),0));
+  track('b27track', s.reduce((t,b)=>t+(num(get('q.b27.'+b))||0),0));
+  track('b24track', BANDS.reduce((t,b,i)=>t+(num(get('q.b24.p'+i))||0),0));
+  document.querySelectorAll('[data-a7chk]').forEach(d=>{ const p='q.a7.'+d.dataset.a7chk, mrp=num(get(p+'.mrp')), csp=num(get(p+'.csp'));
+    d.innerHTML = mrp&&csp&&csp>mrp?'<div class="warnbox">CSP is above MRP. Please check.</div>':''; });
+  const b3=$('#b3chk'); if(b3){ const f=num(get('q.b2')), b=num(get('q.b3')); b3.innerHTML = f!=null&&b!=null&&b>f?'<div class="warnbox">More bills than walk-ins per day. Please check.</div>':''; }
+  const ec=$('#econCalc'); if(ec) ec.innerHTML=econHtml();
+  const b5=$('#b5chk'); if(b5){ const d=num(get('q.b4_day')), m=num(get('q.b5.rev_m')); let w='';
+    if(d&&m){ const r=m/(d*30); if(r<0.6||r>1.6) w=`<div class="warnbox">Mattress revenue of ${inr(m)} a month does not match B4 (${inr(d)} a day ≈ ${inr(d*30)} a month). Please check.</div>`; }
+    const o=evalCalcs(), gm=o['B5 Calc - Gross margin (%)']; if(gm!=null&&(gm<0||gm>0.6)) w+=`<div class="warnbox">Gross margin of ${(gm*100).toFixed(1)}% looks unusual. Check COGS per unit and ASP.</div>`;
+    b5.innerHTML=w; }
+  const bt=$('#b25tot'); if(bt){ const t=ROLES.reduce((s,r,i)=>s+(num(get('q.b25.r'+i))||0),0); bt.textContent=t?'Total employees: '+t:''; }
+}
+
+/* ============ VALIDATION ============ */
+function validate(page){
+  if(page==='start'){
+    if(!state.meta.visitor.trim()) return 'Please enter the EYP visitor name.';
+    if(!state.meta.city.trim()) return 'Please enter the city.';
+    if(!state.meta.store.trim()) return 'Please enter the store name.';
+    if(!state.storeType) return 'Please choose EBO or MBO.';
+    if(isEBO()&&!eboBrand()) return 'Please choose the brand of this EBO.';
+  }
+  if(page===1 && !stocked().length) return 'Please tick at least one brand in A1.';
+  if(page==='photos'){
+    const e=validate('start'); if(e) return e+' (Start page)';
+    if(!gphotos.out.length) return 'Please take a photo of the store from outside.';
+    if(!gphotos.in.length) return 'Please take a photo of the store from inside.';
+    if(!gphotos.disp.length) return 'Please take a photo of the mattress display.';
+  }
+  return '';
+}
+
+/* ============ EVENTS ============ */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.chip!==undefined){
+    const p=t.dataset.chip, v=t.dataset.val;
+    if(t.dataset.multi==='1'){ let a=arr(p).slice();
+      if(v==='None'&&!a.includes('None')) a=['None']; else { a=a.includes(v)?a.filter(x=>x!==v):a.filter(x=>x!=='None').concat([v]); }
+      set(p,a); }
+    else set(p, get(p)===v?'':v);
+    setMsg(''); saveDraft(); rerender(); return;
+  }
+  if(t.id==='gpsBtn'){ captureGps(); return; }
+  if(t.dataset.toggle){ set(t.dataset.toggle,!get(t.dataset.toggle)); saveDraft(); rerender(); return; }
+  if(t.dataset.dk){ state.dk[t.dataset.dk]=!state.dk[t.dataset.dk]; saveDraft(); rerender(); return; }
+  if(t.dataset.rmtoggle){ const id=t.dataset.rmtoggle; if(state.rmOpen[id]&&!state.rm[id]) state.rmOpen[id]=false; else state.rmOpen[id]=true; rerender(); return; }
+  if(t.id==='addBrandBtn'){ const inp=$('#newBrand'); const name=(inp.value||'').trim().replace(/[.|{}]/g,'');
+    if(!name) return; if(allBrands().some(b=>b.toLowerCase()===name.toLowerCase())){ setMsg('That brand is already in the list.','err'); return; }
+    state.customBrands.push(name); set('q.a1',arr('q.a1').concat([name])); saveDraft(); rerender(); return; }
+  if(t.dataset.addcotton){ state.cotton.push({}); saveDraft(); rerender(); return; }
+  if(t.dataset.delphoto){ const s=t.dataset.delphoto, k=s.lastIndexOf('|'); (gphotos[s.slice(0,k)]||[]).splice(+s.slice(k+1),1); rerender(); return; }
+});
+document.addEventListener('input',e=>{
+  const el=e.target; if(!el.dataset||el.dataset.k===undefined) return;
+  set(el.dataset.k, el.value); saveDraft(); updateLive();
+});
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.dataset&&el.dataset.gphoto){ addPhotos(el.files,el.dataset.gphoto); el.value=''; return; }
+  if(el.dataset&&el.dataset.k!==undefined){ set(el.dataset.k, el.value); saveDraft(); if(el.dataset.rr) rerender(); else updateLive(); }
+});
+$('#backBtn').onclick=()=>{ const l=pages(), i=l.indexOf(cur); if(i>0) showPage(l[i-1]); };
+$('#nextBtn').onclick=()=>{
+  const l=pages(), i=l.indexOf(cur);
+  const err=validate(cur); if(err){ setMsg('⚠ '+err,'err'); return; }
+  if(cur==='start'&&isEBO()&&state.eboBrand==='Other'){ const b=eboBrand(); if(b&&!allBrands().includes(b)) state.customBrands.push(b); state.eboBrand=b; saveDraft(); }
+  if(i<l.length-1) showPage(l[i+1]); else submitAll();
+};
+$('#freshBtn').onclick=()=>{ if(!window.confirm('Clear everything and start a new survey?')) return; resetAll(); };
+$('#againBtn').onclick=()=>{ resetAll(); $('#okOverlay').classList.remove('show'); };
+function resetAll(){ clearDraft(); state=blankState(); gphotos={out:[],in:[],disp:[],other:[]}; $('#draftBanner').classList.add('hidden'); $('#nextBtn').disabled=false; showPage('start'); }
+
+/* ============ GPS ============ */
+function captureGps(){
+  if(!navigator.geolocation){ state.gps={err:'this phone does not support location'}; saveDraft(); rerender(); return; }
+  gpsBusy=true; rerender();
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsBusy=false; state.gps={lat:pos.coords.latitude, lng:pos.coords.longitude, acc:pos.coords.accuracy, at:new Date().toISOString()}; saveDraft(); rerender();
+  }, err=>{
+    gpsBusy=false; const why={1:'permission denied',2:'no signal',3:'timed out'}[err.code]||'error';
+    state.gps={err:why, at:new Date().toISOString()}; saveDraft(); rerender();
+  }, {enableHighAccuracy:true, timeout:20000, maximumAge:60000});
+}
+
+/* ============ PHOTOS ============ */
+function addPhotos(files, target){
+  [...files].forEach(f=>{
+    const reader=new FileReader();
+    reader.onload=()=>{ const img=new Image(); img.onload=()=>{
+      const max=1280, s=Math.min(1,max/Math.max(img.width,img.height));
+      const cv=document.createElement('canvas'); cv.width=Math.round(img.width*s); cv.height=Math.round(img.height*s);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      const url=cv.toDataURL('image/jpeg',0.72);
+      gphotos[target].push({name:f.name,type:'image/jpeg',data:url.split(',')[1],url});
+      setMsg(''); rerender();
+    }; img.src=reader.result; };
+    reader.readAsDataURL(f);
+  });
+}
+const PHOTO_LABEL={out:'outside',in:'inside',disp:'display',other:'other'};
+function photoPlan(){ const list=[], grp={out:[],in:[],disp:[],other:[]}; let k=0;
+  Object.keys(grp).forEach(g=>gphotos[g].forEach(p=>{ list.push(Object.assign({label:PHOTO_LABEL[g]},p)); grp[g].push(++k); }));
+  return {list, grp}; }
+
+/* ============ DRAFT ============ */
+let draftTimer=null;
+function saveDraft(){ clearTimeout(draftTimer); draftTimer=setTimeout(()=>{ try{ localStorage.setItem(DRAFT_KEY,JSON.stringify(state)); }catch(e){} },300); }
+function clearDraft(){ clearTimeout(draftTimer); try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
+function loadDraft(){ try{ const s=localStorage.getItem(DRAFT_KEY); if(!s) return false; const d=JSON.parse(s); if(!d||!d.id) return false;
+  state=Object.assign(blankState(),d); state.meta=Object.assign(blankState().meta,d.meta||{}); state.gps=d.gps||{}; return true; }catch(e){ return false; } }
+
+/* ============ COLLECT ============ */
+function collect(){
+  const cols=[]; const add=(k,v)=>cols.push([k, v==null?'':(Array.isArray(v)?v.join(' | '):String(v))]);
+  const g=p=>{const v=get(p);return v==null?'':v};
+  const qa=id=>{ add(id+" Don't know / Refused", state.dk[id]?'Yes':''); add(id+' Remarks', state.rm[id]||''); };
+  const brands=allBrands(), st=stocked(), one=st.length===1, pp=photoPlan(), gp=state.gps||{};
+  const on=b=>st.includes(b);
+  add('Store ID',state.id); add('Survey version',VERSION); add('Test response',state.meta.test?'Yes':'No');
+  add('Started at (phone)',state.started); add('Submitted at (phone)',new Date().toISOString());
+  add('EYP visitor',state.meta.visitor.trim()); add('Date of visit',state.meta.date); add('City',state.meta.city.trim()); add('Location / area',state.meta.area.trim());
+  add('Store name',state.meta.store.trim()); add('Age of store (years)',state.meta.age); add('Store contact person',state.meta.contact.trim()); add('Store contact number',state.meta.phone.trim());
+  add('Store type',isEBO()?'EBO':state.storeType?'MBO':''); add('EBO brand',eboBrand());
+  add('Latitude',gp.lat!=null?gp.lat.toFixed(6):''); add('Longitude',gp.lng!=null?gp.lng.toFixed(6):''); add('GPS accuracy (m)',gp.acc!=null?Math.round(gp.acc):'');
+  add('GPS note',gp.err?('Not captured: '+gp.err):''); add('Map link',gp.lat!=null?`https://maps.google.com/?q=${gp.lat.toFixed(6)},${gp.lng.toFixed(6)}`:'');
+  // A · Observe
+  add('A1 Brands available',st); add('A1 No. of brands available',st.length); add('A1 Flo available',on(TARGET)?'Yes':'No');
+  brands.forEach(b=>add('A1 Available - '+b,on(b)?'Y':'N')); qa('A1');
+  add('A2 Staff conversation quality / knowledge (1-5)',g('q.a2_conv')); add('A2 Staff attire / dress code (1-5)',g('q.a2_attire')); qa('A2');
+  add('A3 No. of SKUs on display',g('q.a3')); qa('A3');
+  add('A4 Highest-priced product (₹)',g('q.a4_price')); add('A4 Highest-priced product - brand',g('q.a4_brand')); add('A4 Highest-priced product - model',g('q.a4_model')); qa('A4');
+  brands.forEach(b=>add('A5 Shelf share (%) - '+b,on(b)?(one?100:g('q.a5.'+b)):'')); qa('A5');
+  add('A6 Customer age',AGE.filter(x=>arr('q.a6_age').includes(x))); add('A6 Customer gender',g('q.a6_gender')); add('A6 Product knowledge / acceptance',KNOW.filter(x=>arr('q.a6_know').includes(x))); qa('A6');
+  brands.forEach(b=>{ const p='q.a7.'+b, m=g(p+'.model'), ok=on(b)&&m&&m!==NONE_MODEL;
+    add('A7 Foam 72x60x6 model - '+b,!on(b)?'':m===OTHER_MODEL?('Other: '+g(p+'.other')):m);
+    add('A7 Foam 72x60x6 benchmark SKU - '+b,on(b)&&m?(BENCH[b]&&m===BENCH[b]?'Yes':'No'):'');
+    add('A7 Foam 72x60x6 MRP (₹) - '+b,ok?g(p+'.mrp'):''); add('A7 Foam 72x60x6 CSP (₹) - '+b,ok?g(p+'.csp'):''); }); qa('A7');
+  brands.forEach(b=>{ const p='q.a8.'+b, a=on(b)?g(p+'.avail'):'', d=a==='On display';
+    add('A8 Spring 72x60x6 on display - '+b,a); add('A8 Spring 72x60x6 CSP (₹) - '+b,d?g(p+'.csp'):''); add('A8 Spring 72x60x6 model - '+b,d?g(p+'.model'):''); }); qa('A8');
+  brands.forEach(b=>{ const p='q.a9.'+b, y=on(b)?g(p+'.yn'):''; add('A9 Offer running - '+b,y==='Offer running'?'Y':y==='No offer'?'N':''); add('A9 Offer details - '+b,y==='Offer running'?g(p+'.detail'):''); });
+  add('A9 Store-level discount',g('q.a9_store')); add('A9 Card offers',g('q.a9_card')); qa('A9');
+  add('A10 Lighting (1-5)',g('q.a10_light')); add('A10 Seating (1-5)',g('q.a10_seat')); add('A10 General look and feel (1-5)',g('q.a10_look'));
+  add('A10 Odour',g('q.a10_odour')); add('A10 Water offered',g('q.a10_water')); add('A10 Digital screens / tablets',g('q.a10_screens')); qa('A10');
+  add('A11 Omnichannel features',OMNI.filter(x=>arr('q.a11_omni').includes(x))); add('A11 Brand recommended first',g('q.a11_first'));
+  add('A11 Time spent explaining each product',g('q.a11_time')); add('A11 Brand customers increasingly ask for',g('q.a11_asked')); qa('A11');
+  brands.forEach(b=>add('A12 Turnaround time - '+b,on(b)?g('q.a12.'+b):'')); qa('A12');
+  add('A13 Sells accessories',g('q.a13')); add('A13 Accessories sold',g('q.a13')==='Yes'?ACCESS.filter(x=>arr('q.a13_which').includes(x)):''); qa('A13');
+  // B · Ask
+  add('B1 Store area (sq ft)',g('q.b1')); qa('B1');
+  add('B2 Avg footfall per day',g('q.b2')); qa('B2');
+  add('B3 Avg bills per day',g('q.b3')); qa('B3');
+  add('B4 Avg mattress sales per day (₹)',g('q.b4_day')); add('B4 Cushions / pillows sold per month',g('q.b4_cush')); add('B4 Bedding / bed covers sold per month',g('q.b4_bed')); add('B4 Furniture sold per month',g('q.b4_furn')); qa('B4');
+  ECON.forEach(e=>{ if(e.k) add(e.h,g('q.b5.'+e.k)); });
+  const ev=evalCalcs(); CALC.forEach(c=>add(c.h,ev[c.h]==null?'':ev[c.h])); qa('B5');
+  add('B6 Avg bill value after discount (₹)',g('q.b6')); qa('B6');
+  add('B7 Avg discount on the bill (%)',g('q.b7')); qa('B7');
+  brands.forEach(b=>{ add('B8 Most popular thickness - '+b,on(b)?g('q.b8.'+b+'.t'):''); add('B8 Most popular model - '+b,on(b)?g('q.b8.'+b+'.m'):''); }); qa('B8');
+  add('B9 Salesperson salary per month (₹)',g('q.b9')); qa('B9');
+  add('B10 Sales incentives - level',INCENT_WHO.filter(x=>arr('q.b10_who').includes(x))); add('B10 Sales incentives - details',g('q.b10_detail')); qa('B10');
+  add('B11 Highest-selling category',g('q.b11')); add('B11 Highest-selling brand / range',g('q.b11_brand')); qa('B11');
+  add('B12 USP of the store / brand',g('q.b12')); qa('B12');
+  add('B13 Loyalty programme / warranty',g('q.b13')); qa('B13');
+  add('B14 Peak days',DAYS.filter(x=>arr('q.b14_days').includes(x))); add('B14 Peak months',MONTHS.filter(x=>arr('q.b14_months').includes(x))); add('B14 Peak festivals / seasons',g('q.b14_note')); qa('B14');
+  add('B15 Inventory model',g('q.b15')); add('B15 % of portfolio held in stock',g('q.b15_pct')); qa('B15');
+  add('B16 Days to deliver after order',g('q.b16')); qa('B16');
+  add('B17 Delivery charges',g('q.b17')); add('B17 Delivery charge details',g('q.b17')&&g('q.b17')!=='Free'?g('q.b17_detail'):''); qa('B17');
+  add('B18 Ownership',g('q.b18')); qa('B18');
+  add('B19 Loses customers who check prices online',g('q.b19')); qa('B19');
+  add('B20 Unbranded to branded conversion drivers',CONV.filter(x=>arr('q.b20').includes(x))); add('B20 Conversion drivers - in their words',g('q.b20_note')); qa('B20');
+  state.cotton.forEach((c,i)=>{ add('B21 Cotton 72x60x3 product '+(i+1),c.name||''); add('B21 Cotton 72x60x3 price '+(i+1)+' (₹)',c.price||''); });
+  const cp=state.cotton.map(c=>num(c.price)).filter(x=>x!=null); add('B21 Cotton 72x60x3 avg price (₹)',cp.length?Math.round(cp.reduce((a,b)=>a+b,0)/cp.length):''); qa('B21');
+  add('B22 Willing to add a value brand like Flo',g('q.b22')); add('B22 Reasons / conditions',g('q.b22')?FLO_WHY.filter(x=>arr('q.b22_why').includes(x)):''); qa('B22');
+  brands.forEach(b=>{ const p='q.b23.'+b; add('B23 Entry-level SKU - '+b,on(b)?g(p+'.m'):''); add('B23 Entry-level price (₹) - '+b,on(b)?g(p+'.p'):''); add('B23 Entry-level warranty (years) - '+b,on(b)?g(p+'.w'):''); }); qa('B23');
+  BANDS.forEach((b,i)=>add('B24 Sales volume (%) - '+b,g('q.b24.p'+i))); qa('B24');
+  ROLES.forEach((r,i)=>add('B25 Employees - '+r,g('q.b25.r'+i))); const et=ROLES.reduce((s,r,i)=>s+(num(get('q.b25.r'+i))||0),0); add('B25 Employees - total',et||''); qa('B25');
+  brands.forEach(b=>add('B26 Credit period (days) - '+b,on(b)?g('q.b26.'+b):'')); qa('B26');
+  brands.forEach(b=>add('B27 Share of wallet (%) - '+b,on(b)?(one?100:g('q.b27.'+b)):'')); qa('B27');
+  add('Photo no. - store outside',pp.grp.out.join(', ')); add('Photo no. - store inside',pp.grp.in.join(', '));
+  add('Photo no. - mattress display',pp.grp.disp.join(', ')); add('Photo no. - other',pp.grp.other.join(', ')); add('Photos (count)',pp.list.length);
+  return cols;
+}
+
+/* ============ SUBMIT ============ */
+async function submitAll(){
+  const err=validate('photos'); if(err){ setMsg('⚠ '+err,'err'); return; }
+  if(SCRIPT_URL.indexOf('__')===0){ setMsg('This survey is not connected to the Google Sheet yet. Tell the survey owner.','err'); return; }
+  const btn=$('#nextBtn'); btn.disabled=true; setMsg('Submitting… please do not close this page.','load');
+  const pp=photoPlan();
+  const payload={survey:'float_store', version:VERSION, id:state.id, cols:collect(),
+    calc:CALC.map(c=>({h:c.h,f:c.f,req:c.req,any:!!c.any,pct:!!c.pct})),
+    photos:pp.list.map(p=>({name:p.name,type:p.type,data:p.data,label:p.label}))};
+  const body=JSON.stringify(payload);
+  const once=()=>Promise.race([fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body}),
+                                new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),45000))]);
+  try{
+    try{ await once(); }catch(e1){ if(e1.message==='timeout'){ setMsg('Still sending… retrying once.','load'); await once(); } else throw e1; }
+    clearDraft(); setMsg(''); $('#okOverlay').classList.add('show');
+  }catch(e){
+    btn.disabled=false;
+    setMsg('⚠ Could not reach the server. Check the internet and tap Submit again. Your answers are saved on this phone.','err');
+  }
+}
+
+/* ============ INIT ============ */
+if(loadDraft()) $('#draftBanner').classList.remove('hidden');
+showPage('start');
+</script>
+</body>
+</html>
