@@ -192,9 +192,9 @@ const ECON = [
   {g:'Revenue (per month)'},
   {k:'asp', h:'B5 Mattress ASP (₹)', l:'Mattress average selling price ₹'},
   {k:'rev_m', h:'B5 Revenue - mattress (₹/month)', l:'Revenue from mattresses ₹'},
-  {k:'rev_c', h:'B5 Revenue - cushions / pillows (₹/month)', l:'Cushions / pillows ₹'},
-  {k:'rev_b', h:'B5 Revenue - bedding / bed covers (₹/month)', l:'Bedding / bed covers ₹'},
-  {k:'rev_f', h:'B5 Revenue - furniture (₹/month)', l:'Furniture ₹'},
+  {k:'rev_c', h:'B5 Selling price per unit - cushions / pillows (₹)', l:'Cushions / pillows: selling price per unit ₹', u:'q.b4_cush', uh:'B4 Cushions / pillows sold per month'},
+  {k:'rev_b', h:'B5 Selling price per unit - bedding / bed covers (₹)', l:'Bedding / bed covers: selling price per unit ₹', u:'q.b4_bed', uh:'B4 Bedding / bed covers sold per month'},
+  {k:'rev_f', h:'B5 Selling price per unit - furniture (₹)', l:'Furniture: selling price per unit ₹', u:'q.b4_furn', uh:'B4 Furniture sold per month'},
   {g:'Cost of goods'},
   {k:'cogs_u', h:'B5 Mattress COGS per unit (₹)', l:'Mattress purchase cost per unit ₹'},
   {k:'cogs_o', h:'B5 Other products COGS (₹/month)', l:'Other products purchase cost ₹ / month'},
@@ -213,8 +213,9 @@ const ECON = [
 ];
 const H = k=>'{'+ECON.find(e=>e.k===k).h+'}';
 const C = n=>'{B5 Calc - '+n+'}';
+const U = k=>'{'+ECON.find(e=>e.k===k).uh+'}';
 const CALC = [
-  {h:'B5 Calc - Revenue from other products (₹/month)', f:`${H('rev_c')}+${H('rev_b')}+${H('rev_f')}`, req:[H('rev_c'),H('rev_b'),H('rev_f')], any:true},
+  {h:'B5 Calc - Revenue from other products (₹/month)', f:`${H('rev_c')}*${U('rev_c')}+${H('rev_b')}*${U('rev_b')}+${H('rev_f')}*${U('rev_f')}`, req:[H('rev_c'),H('rev_b'),H('rev_f')], any:true},
   {h:'B5 Calc - Total revenue (₹/month)', f:`${H('rev_m')}+${C('Revenue from other products (₹/month)')}`, req:[H('rev_m')]},
   {h:'B5 Calc - Mattresses sold (units/month)', f:`${H('rev_m')}/${H('asp')}`, req:[H('rev_m'),H('asp')], dp:1},
   {h:'B5 Calc - Total mattress COGS (₹/month)', f:`${H('cogs_u')}*${C('Mattresses sold (units/month)')}`, req:[H('cogs_u'),C('Mattresses sold (units/month)')]},
@@ -411,7 +412,7 @@ function renderP4(){
 }
 
 /* ============ PAGE 5 · B5 ECONOMICS ============ */
-function econVals(){ const v={}; ECON.forEach(e=>{ if(e.k) v[e.h]=num(get('q.b5.'+e.k)); }); return v; }
+function econVals(){ const v={}; ECON.forEach(e=>{ if(e.k) v[e.h]=num(get('q.b5.'+e.k)); if(e.uh) v[e.uh]=num(get(e.u)); }); return v; }
 function evalCalcs(){
   const v=econVals(), out={};
   const val=t=>{ const k=t.slice(1,-1); return k in out ? out[k] : v[k]; };
@@ -428,10 +429,10 @@ function evalCalcs(){
 function fmtCalc(c,x){ if(x==null) return '—'; if(c.pct) return (x*100).toFixed(1)+'%'; if(c.dp) return x.toFixed(c.dp); return inr(x); }
 function renderP5(){
   let h = secHead(5);
-  let body='<div class="q-hint">Ask for a normal month. Rough numbers are fine. Margins, EBITDA and ROI are calculated for you below and in the Sheet.</div>';
+  let body='<div class="q-hint">Ask for a normal month. Rough numbers are fine. For cushions, bedding and furniture enter the selling price per unit; revenue is worked out from the units sold in B4. Margins, EBITDA and ROI are calculated for you below and in the Sheet.</div>';
   ECON.forEach(e=>{ if(e.g){ body+=`<div class="sub">${esc(e.g)}</div>`; return; }
     body+= e.days?`<label class="f">${esc(e.l)}</label>${txt('q.b5.'+e.k,'days','number')}<div class="muted">Customer credit days minus supplier credit days, excluding inventory.</div>`
-                 :`<label class="f">${esc(e.l)}</label>${money('q.b5.'+e.k)}`; });
+                 :`<label class="f">${esc(e.l)}</label>${money('q.b5.'+e.k)}${e.u?`<div class="muted" data-oth="${e.k}"></div>`:''}`; });
   body+=`<div class="sub">Calculated (check these look sensible)</div><div class="fz-sum" id="econCalc"></div><div id="b5chk"></div>`;
   h += card('B5','Store P&L: revenue, costs, incentives and capital','',body);
   return h;
@@ -532,6 +533,8 @@ function updateLive(){
   document.querySelectorAll('[data-a7chk]').forEach(d=>{ const p='q.a7.'+d.dataset.a7chk, mrp=num(get(p+'.mrp')), csp=num(get(p+'.csp'));
     d.innerHTML = mrp&&csp&&csp>mrp?'<div class="warnbox">CSP is above MRP. Please check.</div>':''; });
   const b3=$('#b3chk'); if(b3){ const f=num(get('q.b2')), b=num(get('q.b3')); b3.innerHTML = f!=null&&b!=null&&b>f?'<div class="warnbox">More bills than walk-ins per day. Please check.</div>':''; }
+  document.querySelectorAll('[data-oth]').forEach(d=>{ const e=ECON.find(x=>x.k===d.dataset.oth), p=num(get('q.b5.'+e.k)), n=num(get(e.u));
+    d.textContent = n==null ? 'Units sold per month not entered in B4' : `× ${n} sold per month (B4)`+(p!=null?` = ${inr(p*n)} a month`:''); });
   const ec=$('#econCalc'); if(ec) ec.innerHTML=econHtml();
   const b5=$('#b5chk'); if(b5){ const d=num(get('q.b4_day')), m=num(get('q.b5.rev_m')); let w='';
     if(d&&m){ const r=m/(d*30); if(r<0.6||r>1.6) w=`<div class="warnbox">Mattress revenue of ${inr(m)} a month does not match B4 (${inr(d)} a day ≈ ${inr(d*30)} a month). Please check.</div>`; }
